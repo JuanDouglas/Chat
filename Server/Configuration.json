@@ -1,0 +1,7 @@
+{
+  "Port": 5454,
+  "ResponseIP": "127.0.0.1",
+  "MaxConnections": 25,
+  "BufferLength": 4096,
+  "Encoding": "UTF-16"
+}
