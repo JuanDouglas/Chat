@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Chat.Server
 {
@@ -13,18 +14,31 @@ namespace Chat.Server
         public string Encoding { get; set; }
         public Configuration()
         {
-            
+
         }
-        public static Configuration LoadByJson(string path)
+        public static Configuration LoadByJson(string text)
         {
-            string text = File.ReadAllText(path);
             Configuration config = JsonConvert.DeserializeObject<Configuration>(text);
             return config;
         }
 
+        public static Configuration LoadByByteArray(byte[] array)
+        {
+            return LoadByJson(System.Text.Encoding.UTF8.GetString(array));
+        }
+
+        public static Configuration LoadByPath(string path)
+        {
+            return LoadByByteArray(File.ReadAllBytes(path));
+        }
+
         public override string ToString()
         {
-            return base.ToString();
+            return $"Encoding: {Encoding}\n" +
+                $"Buffer Length: {BufferLength}\n" +
+                $"Max Connections: {MaxConnections}\n" +
+                $"Response IP: {ResponseIP}\n" + 
+                $"Port: {Port}";
         }
     }
 }
