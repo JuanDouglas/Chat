@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Chat.Protocol;
+using Chat.Protocol.Base;
 
 namespace Chat.Server
 {
@@ -68,7 +70,9 @@ namespace Chat.Server
                 {
                     // Traduz os dados em bytes para o enconding especificados na configuração 
                     data = encoding.GetString(bytes, 0, i);
-                    Console.WriteLine("Received: {0}", data);
+
+                    CCMessage connect = new(encoding, bytes);
+
 
                     // Process the data sent by the client.
                     byte[] msg = encoding.GetBytes("HTTP/1.1 404 Not Found\r\nDate: Sun, 18 Oct 2012 10:36:20 GMT\r\nServer: Apache/2.2.14 (Win32)\r\nContent-Length: 230\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nResposta HTTP");
@@ -76,14 +80,16 @@ namespace Chat.Server
                     // Send back a response.
                     stream.Write(msg, 0, msg.Length);
 
-                    Task.Run(() => {
+                    Task task = Task.Run(() =>
+                    {
                         for (int i = 0; i < int.MaxValue; i++)
                         {
                             Thread.Sleep(2000);
 
-                        msg = encoding.GetBytes($"Resposta HTTP {i}");
+                            msg = encoding.GetBytes($"Resposta HTTP {i}");
                         }
                     });
+
                     // Send back a response.
                     stream.Write(msg, 0, msg.Length);
                     Console.WriteLine("Sent: {0}", data);
