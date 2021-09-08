@@ -6,8 +6,7 @@ namespace Chat.Protocol
 {
     public class ConnectMessage : CCMessage
     {
-      
-
+        public ConnectMessage(): base(Encoding.ASCII){ }
     }
 
     public class Authentication

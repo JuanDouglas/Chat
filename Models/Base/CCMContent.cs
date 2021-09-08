@@ -19,7 +19,7 @@ namespace Chat.Protocol.Base
 
         public byte[] ByteArray { get; set; }
 
-        public string StringContent { get { return Encoding.GetString(ByteArray); } set { ByteArray = Encoding.GetBytes(value)} }
+        public string StringContent { get { return Encoding.GetString(ByteArray); } set { ByteArray = Encoding.GetBytes(value); } }
 
         internal static string EncodingAttributeKey => "Content-Encoding";
 

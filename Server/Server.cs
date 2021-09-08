@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System.Threading;
 using Chat.Protocol;
 using Chat.Protocol.Base;
+using System.IO;
+using Chat.Protocol.Base.Exceptions;
 
 namespace Chat.Server
 {
@@ -25,26 +27,35 @@ namespace Chat.Server
         /// <summary>
         /// Inicia o servidor usando as configurações definidas anteriormente.
         /// </summary>
-        public async Task StartAsync()
+        public async Task Start()
         {
-            // Obtem o endereço IP do HOST pela DNS  
+            // Obtém o endereço IP do HOST pela DNS  
             IPHostEntry entry = Dns.GetHostEntry(Configuration.ResponseIP);
-            IPAddress address = entry.AddressList[entry.AddressList.Length - 1];
+            IPAddress address = entry.AddressList[^1];
 
-            // Cria um EndPoint que ira responder pelo IP obtido
+            // Cria um EndPoint que irá responder pelo IP obtido
             // anteriormente na porta definida em Configuration.json
             IPEndPoint endPoint = new(address, Configuration.Port);
             Console.WriteLine($"Starting server in {endPoint} host.");
             try
             {
+                //Inicia o listener no EndPoint especificado
                 TcpListener listener = new(endPoint);
+
+                //Define o máximo de conexões que este servirdor pode ter.
                 listener.Start(Configuration.MaxConnections);
 
+                
                 Console.WriteLine("Awaiting client connection...");
                 while (true)
                 {
                     TcpClient client = listener.AcceptTcpClient();
-                    Task task = Connect(client);
+
+                    Thread th = new(() =>
+                    {
+                        Connect(client);
+                    });
+                    th.Start();
                 }
             }
             catch (Exception e)
@@ -53,54 +64,84 @@ namespace Chat.Server
             }
         }
 
-        private async Task Connect(TcpClient handler)
+        private void Connect(TcpClient handler)
         {
+            int i;
+            byte[] buffer = new byte[Configuration.BufferLength];
+            string data;
+            Encoding encoding = Encoding.GetEncoding(Configuration.Encoding);
+
+            // Obtém o stream do cliente.
+            NetworkStream stream = handler.GetStream();
+
             try
             {
-                // Obtém o stream do cliente.
-                NetworkStream stream = handler.GetStream();
-
-                int i;
-                byte[] bytes = new byte[Configuration.BufferLength];
-                string data;
-                Encoding encoding = Encoding.GetEncoding(Configuration.Encoding);
-
                 // Loop para ler todo o conteudo da mensagem.
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     // Traduz os dados em bytes para o enconding especificados na configuração 
-                    data = encoding.GetString(bytes, 0, i);
+                    data = encoding.GetString(buffer, 0, i);
 
-                    CCMessage connect = new(encoding, bytes);
+                    //Reduz o tamanho do buffer
+                    buffer = buffer.RelockBuffer(0, i);
 
+                    
+                    CCMessage connect = new(encoding, buffer);
 
-                    // Process the data sent by the client.
-                    byte[] msg = encoding.GetBytes("HTTP/1.1 404 Not Found\r\nDate: Sun, 18 Oct 2012 10:36:20 GMT\r\nServer: Apache/2.2.14 (Win32)\r\nContent-Length: 230\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nResposta HTTP");
-
-                    // Send back a response.
-                    stream.Write(msg, 0, msg.Length);
-
-                    Task task = Task.Run(() =>
-                    {
-                        for (int i = 0; i < int.MaxValue; i++)
-                        {
-                            Thread.Sleep(2000);
-
-                            msg = encoding.GetBytes($"Resposta HTTP {i}");
-                        }
-                    });
-
-                    // Send back a response.
-                    stream.Write(msg, 0, msg.Length);
-                    Console.WriteLine("Sent: {0}", data);
                 }
-
             }
             catch (SocketException e)
             {
-                Console.WriteLine();
+                Console.WriteLine(e.ToString());
                 handler.Close();
             }
+            catch (HttpRequestException e)
+            {
+                // Codifica a mensagem http a ser enviado para o cliente 
+                byte[] msg = encoding.GetBytes($"HTTP/1.1 400 Bad Reuest\r\nDate: {DateTime.UtcNow}\r\nServer: CCM Server\r\nContent-Length: 110\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nThis server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!");
+
+                // Manda a mensagem para o cliente
+                stream.Write(msg, 0, msg.Length);
+
+                // Mostra mensagem avisando que a conexão foi fechada
+                Console.WriteLine($"Close connection to {handler.Client.RemoteEndPoint} with protocol error.");
+
+                // Fecha efetivamente a conexão. 
+                handler.Close();
+            }
+        }
+    }
+
+
+    public static class Extension
+    {
+        public static byte[] RelockBuffer(this byte[] bytes, int offset, int newLength)
+        {
+            byte[] buffer = bytes;
+            bytes = new byte[newLength];
+            for (int i = 0; i < newLength; i++)
+            {
+                bytes[i] = buffer[i + offset + 1];
+            }
+            return bytes;
+        }
+
+        public static byte[] RelockBuffer(this byte[] bytes, byte[] addBytes, int offset, int size)
+        {
+            byte[] buffer = bytes;
+
+            bytes = new byte[buffer.Length + size + 1];
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                bytes[i] = buffer[i];
+            }
+
+            for (int i = 0; i < size; i++)
+            {
+                bytes[i + buffer.Length] = addBytes[offset + i];
+            }
+
+            return bytes;
         }
     }
 }

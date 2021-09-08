@@ -20,6 +20,7 @@ namespace Chat.Protocol.Base
         {
             attributes = new();
             Add(new("SendDate", DateTime.Now.ToString()));
+            Add(new(CCMContent.EncodingAttributeKey, Encoding.Default.HeaderName));
         }
 
         private List<MessageAttribute> attributes;

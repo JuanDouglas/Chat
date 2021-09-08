@@ -1,4 +1,5 @@
 ﻿using Chat.Protocol.Base.Enums;
+using Chat.Protocol.Base.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,21 +13,37 @@ namespace Chat.Protocol.Base
         {
             Version = "1.0";
             Type = MessageType.NotDefined;
+            Attributes = new();
+            Encoding = encoding;
         }
 
         public CCMessage(Encoding encoding, string header, byte[] content)
             : this(encoding)
         {
+            string http = header.Substring(0, 4);
+            if (http.ToLowerInvariant() == "http".ToLowerInvariant())
+            {
+                throw new HttpRequestException();
+            }
 
+            if (http.ToLowerInvariant() != "CCM".ToLowerInvariant())
+            {
+                throw new HttpRequestException();
+            }
         }
 
         public CCMessage(Encoding encoding, byte[] bytes) :
             this(encoding, encoding.GetString(bytes, 0, bytes.Length).Split(Separetor)[0] + Separetor, encoding.GetBytes(string.Empty))
         {
             string header = encoding.GetString(bytes, 0, bytes.Length).Split(Separetor)[0] + Separetor;
+            header = header.Replace("\0", string.Empty);
             int bytesCount = encoding.GetByteCount(header);
+            int length = bytes.Length - bytesCount;
 
-            byte[] content = new byte[bytes.Length - bytesCount];
+            if (length < 1)
+                return;
+
+            byte[] content = new byte[length];
 
             for (int i = 0; i < content.Length; i++)
             {
@@ -50,7 +67,7 @@ namespace Chat.Protocol.Base
                 if (index != 0)
                     Attributes.RemoveAt(index);
 
-                Attributes.Add(new(CCMContent.EncodingAttributeKey, Encoding.EncodingName));
+                Attributes.Add(new(CCMContent.EncodingAttributeKey, Encoding.HeaderName));
             }
         }
         private CCMContent _content;
