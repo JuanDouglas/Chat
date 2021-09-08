@@ -14,11 +14,10 @@ namespace Chat.Server
             Console.WriteLine(configuration.ToString());
 
             server = new(configuration);
-            Task task = server.StartAsync();
+            Task task = server.Start();
 
             if (task.Status == TaskStatus.Created)
                 task.Start();
-
 
             Console.WriteLine("Hello World!");
             Console.ReadLine();

@@ -21,7 +21,7 @@ namespace Chat.Protocol.Base
 
         public string StringContent { get { return Encoding.GetString(ByteArray); } set { ByteArray = Encoding.GetBytes(value); } }
 
-        internal static string EncodingAttributeKey => "Content-Encoding";
+        internal static string EncodingAttributeKey => "Message-Encoding";
 
         public override string ToString()
         {

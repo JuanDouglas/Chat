@@ -13,7 +13,7 @@ using Chat.Protocol.Base.Exceptions;
 
 namespace Chat.Server
 {
-    public class Server
+    public class Server 
     {
         public Configuration Configuration { get; set; }
         public Encoding Encoding { get; set; }
@@ -45,16 +45,22 @@ namespace Chat.Server
                 //Define o máximo de conexões que este servirdor pode ter.
                 listener.Start(Configuration.MaxConnections);
 
-                
+                //Mostra mensagem avisando que espera conexão
                 Console.WriteLine("Awaiting client connection...");
+
+                //Loop para esperar conexão
                 while (true)
                 {
+                    //Aceita a conexão 
                     TcpClient client = listener.AcceptTcpClient();
 
+                    //Cria um novo thread para continuar a comunicação 
                     Thread th = new(() =>
                     {
                         Connect(client);
                     });
+
+                    //Inicia o thread criado
                     th.Start();
                 }
             }
@@ -85,7 +91,9 @@ namespace Chat.Server
                     //Reduz o tamanho do buffer
                     buffer = buffer.RelockBuffer(0, i);
 
-                    
+                    // Mostra mensagem avisando que a conexão foi aberta
+                    Console.WriteLine($"Open connection to {handler.Client.RemoteEndPoint}");
+
                     CCMessage connect = new(encoding, buffer);
 
                 }
