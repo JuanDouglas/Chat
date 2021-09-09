@@ -6,7 +6,7 @@ Este projeto foi feito por [Juan Douglas](https://github.com/JuanDouglas) a idei
 Chat Communication Message é um protocolo baseado em HTTP para criado para fazer a comunicação entre Cliente e Servidor este protocolo não segue nenhum padrão da industria este protocolo e de carácter apenas de estudo de _TCP/IP_, sendo assim não tem como foco segurança e nem praticidade, para solucionar este "problema" poderia ser usado perfeitamente o HTTP, que junto com HTTPS daria praticidade, segurança e agilidade.
 > Caso alguma mensagem não esteja seguindo o protocolo _CCM_ o servidor irá responder usando HTTP com o seguinte contéudo "This server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!".
 
-> Para ver exemplos de mensagens usando o protocolo _CCM_ veja esse [link](examples.).
+> Para ver exemplos de mensagens usando o protocolo _CCM_ veja esse [link](Examples.md).
 
 
 ### Esquema de mensagens
@@ -29,12 +29,3 @@ Uma mensagem do protcolo CCM é dividida em 3 partes principais:
     
 ### Fluxo de mensagens 
     
-### Exemplo envio de texto
-Este exemplo mostra como enviar o texto _"Este é um exemplo de mensagem enviado ao usuário 'User123'. "_ ao usuário do "User123" utilizando a codificação _UTF-8_, com o token de usuário "AAAAAAAAAAAAAA".
-	
-    CCM\1.0 Text
-    User: AAAAAAAAAAAAAA
-    Addressee: User123
-    Message-Encoding: UTF-8
-    
-    Este é um exemplo de mensagem enviado ao usuário 'User123'.
