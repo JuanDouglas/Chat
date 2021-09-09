@@ -2,6 +2,8 @@
 Este projeto foi feito por [Juan Douglas](https://github.com/JuanDouglas) a ideia é criar um cliente e servidor para simular um chat. O projeto utiliza diretamente o protocolo _TCP/IP_ para fazer um comunicação, além disso utiliza um protocolo própio chamado de _CCM_ (Chat Communication Message) para enviar e receber mensagens ou streaming.
 > Este Readme contém detalhes sobre o ideia, para saber mais sobre o projeto e seu esquema click [nesse link](Resources/Help/Project.md).
 
+> Para utilizar este projeto você deve serguir os parâmentros da Apache License 2.0 [Saiba mais](LICENSE).
+
 ## CCM
 Chat Communication Message é um protocolo baseado em HTTP para criado para fazer a comunicação entre Cliente e Servidor este protocolo não segue nenhum padrão da industria este protocolo e de carácter apenas de estudo de _TCP/IP_, sendo assim não tem como foco segurança e nem praticidade, para solucionar este "problema" poderia ser usado perfeitamente o HTTP, que junto com HTTPS daria praticidade, segurança e agilidade.
 
