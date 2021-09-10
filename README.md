@@ -33,6 +33,7 @@ Uma mensagem do protcolo CCM é dividida em 3 partes principais:
 ### Fluxo de mensagens 
 A comunicação com o servidor tem 3 grandes fases.
 - **Idêntificação e conexão:** Nesta fase se idêntifica o usuário usando o [OAuth](https://github.com/JuanDouglas/OAuth), durante este processo o usuário vai obter o token único que servirá para idêntificalo neste servidor.
+	> Até o momento o servidor OAuth da Nexus se encontra em construção. Por isso a autenticação OAuth ainda não está implementada no chat, sendo assim na fase de idêntificação é necessário apenas um nome de usuário. 
 - **Envio e recebimento de mensagens:** Nesta fase o usuário já deve estar idêntificado, estando devidamente idêntificado o servidor irá receber e enviar mensagens de usuários para o usuário idêntificado sem uma ordem definida.
 - **Finalização:** Tanto o servidor quanto o cliente podem finalizar a comunicação (o servidor geralmente finaliza por errors no protocolo ou quando não nenhuma resposta), finalizar a comunicação irá desqualificar o token de usuário obtido anteriormente. 
 
