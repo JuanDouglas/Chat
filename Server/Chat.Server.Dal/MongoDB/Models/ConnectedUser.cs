@@ -12,6 +12,8 @@ namespace Chat.Server.Dal.MongoDB.Models
     public class ConnectedUser
     {
         internal const string CollectionName = "ConnectedsUsers";
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         [Required]
         public DateTime LastUpdateTime { get; set; }
         [Required]

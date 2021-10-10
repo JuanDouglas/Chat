@@ -5,8 +5,8 @@ namespace Chat.Server.Dal.MongoDB
 {
     public class MongoDBContext
     {
-        private MongoClient mongoClient;
-        private IMongoDatabase mongoDatabase;
+        private readonly MongoClient mongoClient;
+        private readonly IMongoDatabase mongoDatabase;
         public MongoDBContext(string connectionString, string dbName)
         {
             mongoClient = new(connectionString);

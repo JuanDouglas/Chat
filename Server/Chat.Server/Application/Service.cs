@@ -104,7 +104,7 @@ namespace Chat.Server.Application
                     await ChatContext.NotifyUserConnection(idMessage.Username, remoteEndPoint.ToString());
 
                     //Obtém as messages destinadas a esse usuário
-                    //await ChatContext.GetMessagesAsync(idMessage.Username);
+                    await ChatContext.GetMessagesAsync(idMessage.Username);
 
                 }
             }

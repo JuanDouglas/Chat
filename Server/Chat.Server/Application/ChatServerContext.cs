@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chat.Server.Dal.SqlServer;
+using Chat.Server.Dal.SqlServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Server.Application
 {
@@ -30,12 +32,13 @@ namespace Chat.Server.Application
             SqlServerContext = new(config.SqlConnectionString);
         }
 
-        //public async Task<Message[]> GetMessagesAsync(string username)
-        //{
-        //    var messages = await MongoContext.Messages.FindAsync(fs => fs.TargetUser == username);
-        //    var listAsync = await messages.ToListAsync();
-        //    return listAsync.ToArray();
-        //}
+        public async Task<Message[]> GetMessagesAsync(string username)
+        {
+            User user = await SqlServerContext.Users.FirstOrDefaultAsync(fs=>fs.Username == username); ;
+            var query = SqlServerContext.Messages.Where(fs => fs.TargetUserNavigation.Username == username);
+
+            return await query.ToArrayAsync(); 
+        }
 
         public async Task NotifyUserConnection(string username, string userIP)
         {
