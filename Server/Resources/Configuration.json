@@ -2,6 +2,8 @@
   "Port": 5454,
   "ResponseIP": "localhost",
   "MaxConnections": 25,
+  "MongoConnectionString": "mongodb://localhost:27017",
   "BufferLength": 4096,
-  "Encoding": "UTF-16"
+  "Encoding": "UTF-8",
+  "MongoDBName": "ChatServerDb" 
 }

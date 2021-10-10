@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Protocol.Base.Exceptions
+namespace Chat.Server.Application.Context
 {
-    public class HttpRequestException : ChatException
+    public class LocalDBContext
     {
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chat.Protocol.Base.Exceptions
 {
-    public class HttpRequestException : ChatException
+    public class ChatException : Exception
     {
     }
 }

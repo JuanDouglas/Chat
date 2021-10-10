@@ -1,4 +1,5 @@
 ﻿using Chat.Protocol.Base;
+using Chat.Protocol.Messages;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -21,11 +22,7 @@ namespace Chat.Cli
 
             NetworkStream serverStream = client.GetStream();
 
-            CCMessage message = new(Encoding.UTF8)
-            {
-                Content = new CCMContent(Encoding.UTF8, Encoding.UTF8.GetBytes("Hello Server, get started?"))
-            };
-
+            IdentityMessage message = new("JuanDouglas");
             byte[] outStream = message.ContentBytes();
             serverStream.Write(outStream, 0, outStream.Length);
             serverStream.Flush();

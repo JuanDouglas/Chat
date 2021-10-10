@@ -10,18 +10,21 @@ using Chat.Protocol;
 using Chat.Protocol.Base;
 using System.IO;
 using Chat.Protocol.Base.Exceptions;
+using Chat.Protocol.Messages;
+using Chat.Server.Application.Context;
 
-namespace Chat.Server
+namespace Chat.Server.Application
 {
-    public class Server 
+    public class Service
     {
         public Configuration Configuration { get; set; }
         public Encoding Encoding { get; set; }
-
-        public Server(Configuration configuration)
+        internal ChatContext ChatContext { get; set; }
+        public Service(Configuration configuration)
         {
             Configuration = configuration;
             Encoding = Encoding.GetEncoding(configuration.Encoding);
+            ChatContext = new(Configuration);
         }
 
         /// <summary>
@@ -55,9 +58,9 @@ namespace Chat.Server
                     TcpClient client = listener.AcceptTcpClient();
 
                     //Cria um novo thread para continuar a comunicação 
-                    Thread th = new(() =>
+                    Thread th = new(async () =>
                     {
-                        Connect(client);
+                       await ConnectAsync(client);
                     });
 
                     //Inicia o thread criado
@@ -70,7 +73,7 @@ namespace Chat.Server
             }
         }
 
-        private void Connect(TcpClient handler)
+        private async Task ConnectAsync(TcpClient handler)
         {
             int i;
             byte[] buffer = new byte[Configuration.BufferLength];
@@ -82,6 +85,10 @@ namespace Chat.Server
 
             try
             {
+
+                //
+                EndPoint remoteEndPoint = handler.Client.RemoteEndPoint; 
+
                 // Loop para ler todo o conteudo da mensagem.
                 while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
@@ -92,9 +99,16 @@ namespace Chat.Server
                     buffer = buffer.RelockBuffer(0, i);
 
                     // Mostra mensagem avisando que a conexão foi aberta
-                    Console.WriteLine($"Open connection to {handler.Client.RemoteEndPoint}");
+                    Console.WriteLine($"Open connection to {remoteEndPoint}");
 
-                    CCMessage connect = new(encoding, buffer);
+                    //Identifica este usuario
+                    IdentityMessage idMessage = new(encoding, buffer);
+
+                    //Salva no servidor a conexao do usuario
+                    await ChatContext.NotifyUserConnection(idMessage.Username, remoteEndPoint.ToString());
+
+                    //Obtém as messages destinadas a esse usuário
+                    await ChatContext.GetMessagesAsync(idMessage.Username);
 
                 }
             }

@@ -10,6 +10,7 @@ namespace Chat.Protocol.Base.Enums
     {
         NotDefined,
         Connect,
-        ConnectVoice
+        ConnectVoice,
+        Identity
     }
 }
