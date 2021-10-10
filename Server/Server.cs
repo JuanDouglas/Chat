@@ -106,7 +106,7 @@ namespace Chat.Server
             catch (HttpRequestException e)
             {
                 // Codifica a mensagem http a ser enviado para o cliente 
-                byte[] msg = encoding.GetBytes($"HTTP/1.1 400 Bad Reuest\r\nDate: {DateTime.UtcNow}\r\nServer: CCM Server\r\nContent-Length: 110\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nThis server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!");
+                byte[] msg = encoding.GetBytes($"HTTP/1.1 400 Bad Request\r\nDate: {DateTime.UtcNow}\r\nServer: CCM Server\r\nContent-Length: 110\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nThis server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!");
 
                 // Manda a mensagem para o cliente
                 stream.Write(msg, 0, msg.Length);

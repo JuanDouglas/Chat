@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Chat.Cli
 {
-    class Program
+    public static class Program
     {
-        const string Host = "192.168.1.64";
+        static string Host ="127.0.0.1";
         const int Port = 5454;
         static void Main(string[] args)
         {

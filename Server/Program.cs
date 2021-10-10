@@ -10,7 +10,7 @@ namespace Chat.Server
         public static void Main(string[] args)
         {
             Console.WriteLine("Start configuration!\n");
-            configuration = Configuration.LoadByPath(Environment.CurrentDirectory + "\\Configuration.json");
+            configuration = Configuration.LoadByPath(Environment.CurrentDirectory + "\\Resources\\Configuration.json");
             Console.WriteLine(configuration.ToString());
 
             server = new(configuration);
