@@ -12,7 +12,7 @@ namespace Chat.Protocol.Base
         public CCMessage(Encoding encoding)
         {
             Version = "1.0";
-            Type = MessageType.NotDefined;
+            Type = ProtocolMessageType.NotDefined;
             Attributes = new();
             Encoding = encoding;
             Content = new(encoding, encoding.GetBytes("\0"));
@@ -56,7 +56,7 @@ namespace Chat.Protocol.Base
         }
 
         public string Version { get; private set; }
-        public MessageType Type { get; protected internal set; }
+        public ProtocolMessageType Type { get; protected internal set; }
         public CCMAttributes Attributes { get; set; }
         public CCMContent Content
         {

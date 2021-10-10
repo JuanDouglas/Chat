@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Chat.Protocol;
-using Chat.Protocol.Base;
-using System.IO;
 using Chat.Protocol.Base.Exceptions;
 using Chat.Protocol.Messages;
-using Chat.Server.Application.Context;
 
 namespace Chat.Server.Application
 {
@@ -19,7 +15,7 @@ namespace Chat.Server.Application
     {
         public Configuration Configuration { get; set; }
         public Encoding Encoding { get; set; }
-        internal ChatContext ChatContext { get; set; }
+        internal ChatServerContext ChatContext { get; set; }
         public Service(Configuration configuration)
         {
             Configuration = configuration;
@@ -108,7 +104,7 @@ namespace Chat.Server.Application
                     await ChatContext.NotifyUserConnection(idMessage.Username, remoteEndPoint.ToString());
 
                     //Obtém as messages destinadas a esse usuário
-                    await ChatContext.GetMessagesAsync(idMessage.Username);
+                    //await ChatContext.GetMessagesAsync(idMessage.Username);
 
                 }
             }

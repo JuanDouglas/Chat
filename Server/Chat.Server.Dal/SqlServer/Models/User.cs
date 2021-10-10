@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Server.Application.Context
+namespace Chat.Server.Dal.SqlServer.Models
 {
-    public class LocalDBContext
+    class User
     {
     }
 }

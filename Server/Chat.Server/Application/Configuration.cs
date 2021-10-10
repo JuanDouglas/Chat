@@ -14,6 +14,7 @@ namespace Chat.Server.Application
         public string Encoding { get; set; }
         public string MongoConnectionString { get; set; }
         public string MongoDBName { get; set; }
+        public string SqlConnectionString { get; set; }
         public Configuration()
         {
 

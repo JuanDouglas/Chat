@@ -30,15 +30,38 @@ namespace Chat.Protocol.Base
         public int Count => attributes.Count;
 
         public bool IsReadOnly => false;
-
-        public void Add(MessageAttribute item)
+        /// <summary>
+        /// Add new attribute in current list.
+        /// </summary>
+        /// <param name="item">Atribute</param>
+        /// <param name="remove">Rewrite equal attribute</param>
+        public void Add(MessageAttribute item, bool remove)
         {
             if (attributes.FirstOrDefault(fs => fs.Key == item.Key) == null)
             {
                 attributes.Add(item);
             }
+            else if (remove)
+            {
+                attributes.RemoveAll(rm => rm.Key == item.Key);
+                attributes.Add(item);
+            }
         }
 
+        /// <summary>
+        /// Add new attribute in current list.
+        /// </summary>
+        /// <param name="item">Attribute</param>
+        public void Add(MessageAttribute item) =>
+            Add(item, false);
+
+        /// <summary>
+        /// Get attribute by attribute key
+        /// </summary>
+        /// <param name="key">Attribute key</param>
+        /// <returns>Attribute</returns>
+        public MessageAttribute GetByKey(string key) =>
+            attributes.FirstOrDefault(fs => fs.Key == key);
         public void Clear() =>
             attributes.Clear();
         public bool Contains(MessageAttribute item) =>

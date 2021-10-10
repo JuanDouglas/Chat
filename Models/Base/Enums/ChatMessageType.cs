@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Chat.Protocol.Base.Enums
 {
-    public enum MessageType:uint
+    public enum ChatMessageType : byte
     {
-        NotDefined,
-        Connect,
-        ConnectVoice,
-        Identity
+        Text,
+        Raw
     }
 }
