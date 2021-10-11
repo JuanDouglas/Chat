@@ -1,4 +1,5 @@
 ﻿using Chat.Protocol.Base;
+using Chat.Protocol.Messages;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -6,9 +7,9 @@ using System.Text;
 
 namespace Chat.Cli
 {
-    class Program
+    public static class Program
     {
-        const string Host = "192.168.1.64";
+        static string Host ="127.0.0.1";
         const int Port = 5454;
         static void Main(string[] args)
         {
@@ -21,11 +22,7 @@ namespace Chat.Cli
 
             NetworkStream serverStream = client.GetStream();
 
-            CCMessage message = new(Encoding.UTF8)
-            {
-                Content = new CCMContent(Encoding.UTF8, Encoding.UTF8.GetBytes("Hello Server, get started?"))
-            };
-
+            IdentityMessage message = new("JuanDouglas");
             byte[] outStream = message.ContentBytes();
             serverStream.Write(outStream, 0, outStream.Length);
             serverStream.Flush();

@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Protocol.Base.Enums
+namespace Chat.Protocol.Base.Exceptions
 {
-    public enum MessageType:uint
+    public class ChatException : Exception
     {
-        NotDefined,
-        Connect,
-        ConnectVoice
     }
 }

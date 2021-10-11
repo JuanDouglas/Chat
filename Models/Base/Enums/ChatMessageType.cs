@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Protocol.Base.Exceptions
+namespace Chat.Protocol.Base.Enums
 {
-    public class HttpRequestException : ChatException
+    public enum ChatMessageType : byte
     {
+        Text,
+        Raw
     }
 }

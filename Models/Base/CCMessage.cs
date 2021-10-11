@@ -12,12 +12,13 @@ namespace Chat.Protocol.Base
         public CCMessage(Encoding encoding)
         {
             Version = "1.0";
-            Type = MessageType.NotDefined;
+            Type = ProtocolMessageType.NotDefined;
             Attributes = new();
             Encoding = encoding;
+            Content = new(encoding, encoding.GetBytes("\0"));
         }
 
-        public CCMessage(Encoding encoding, string header, byte[] content)
+        private CCMessage(Encoding encoding, string header, byte[] content)
             : this(encoding)
         {
             string http = header.Substring(0, 4);
@@ -26,7 +27,7 @@ namespace Chat.Protocol.Base
                 throw new HttpRequestException();
             }
 
-            if (http.ToLowerInvariant() != "CCM".ToLowerInvariant())
+            if (!http.ToLowerInvariant().Contains("CM".ToLowerInvariant()))
             {
                 throw new HttpRequestException();
             }
@@ -55,7 +56,7 @@ namespace Chat.Protocol.Base
         }
 
         public string Version { get; private set; }
-        public MessageType Type { get; protected internal set; }
+        public ProtocolMessageType Type { get; protected internal set; }
         public CCMAttributes Attributes { get; set; }
         public CCMContent Content
         {
@@ -72,11 +73,12 @@ namespace Chat.Protocol.Base
         }
         private CCMContent _content;
         public Encoding Encoding { get; set; }
+        protected internal static Encoding DefaultEncoding = Encoding.UTF8;
 
-        public const string Separetor = "\n\n";
+        protected internal const string Separetor = "\n\n";
         private string HeaderString() => $"CCM\\{Version} {Type}" +
             $"{Attributes}{Separetor}";
-        public byte[] ContentBytes()
+        public virtual byte[] ContentBytes()
         {
             string header = HeaderString();
             List<byte> bytes = new(Encoding.GetBytes(header));

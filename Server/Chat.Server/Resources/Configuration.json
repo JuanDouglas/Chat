@@ -1,0 +1,10 @@
+{
+  "BufferLength": 4096,
+  "Encoding": "UTF-8",
+  "MaxConnections": 25,
+  "MongoConnectionString": "mongodb://localhost:27017",
+  "MongoDBName": "ChatServerDb",
+  "Port": 5454,
+  "ResponseIP": "localhost",
+  "SqlConnectionString": "Server=localhost\\MSSQLSERVER01;Database=ChatServer;Trusted_Connection=True;"
+}

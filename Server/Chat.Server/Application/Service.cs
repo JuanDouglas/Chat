@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Chat.Protocol;
-using Chat.Protocol.Base;
-using System.IO;
 using Chat.Protocol.Base.Exceptions;
+using Chat.Protocol.Messages;
+using System.IO;
 
-namespace Chat.Server
+namespace Chat.Server.Application
 {
-    public class Server 
+    public class Service
     {
         public Configuration Configuration { get; set; }
         public Encoding Encoding { get; set; }
-
-        public Server(Configuration configuration)
+        internal ChatServerContext ChatContext { get; set; }
+        public Service(Configuration configuration)
         {
             Configuration = configuration;
             Encoding = Encoding.GetEncoding(configuration.Encoding);
+            ChatContext = new(Configuration);
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace Chat.Server
                     TcpClient client = listener.AcceptTcpClient();
 
                     //Cria um novo thread para continuar a comunicação 
-                    Thread th = new(() =>
+                    Thread th = new(async () =>
                     {
-                        Connect(client);
+                        await ConnectAsync(client);
                     });
 
                     //Inicia o thread criado
@@ -70,7 +70,7 @@ namespace Chat.Server
             }
         }
 
-        private void Connect(TcpClient handler)
+        private async Task ConnectAsync(TcpClient handler)
         {
             int i;
             byte[] buffer = new byte[Configuration.BufferLength];
@@ -82,6 +82,10 @@ namespace Chat.Server
 
             try
             {
+
+                //
+                EndPoint remoteEndPoint = handler.Client.RemoteEndPoint;
+
                 // Loop para ler todo o conteudo da mensagem.
                 while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
@@ -92,25 +96,41 @@ namespace Chat.Server
                     buffer = buffer.RelockBuffer(0, i);
 
                     // Mostra mensagem avisando que a conexão foi aberta
-                    Console.WriteLine($"Open connection to {handler.Client.RemoteEndPoint}");
+                    Console.WriteLine($"Open connection to {remoteEndPoint}");
 
-                    CCMessage connect = new(encoding, buffer);
+                    //Identifica este usuario
+                    IdentityMessage idMessage = new(encoding, buffer);
+
+                    //Salva no servidor a conexao do usuario
+                    await ChatContext.NotifyUserConnection(idMessage.Username, remoteEndPoint.ToString());
+
+                    //Obtém as messages destinadas a esse usuário
+                    await ChatContext.GetMessagesAsync(idMessage.Username);
 
                 }
             }
             catch (SocketException e)
             {
-                Console.WriteLine(e.ToString());
-                handler.Close();
+            }
+            catch (IOException e)
+            {
+
             }
             catch (HttpRequestException e)
             {
                 // Codifica a mensagem http a ser enviado para o cliente 
-                byte[] msg = encoding.GetBytes($"HTTP/1.1 400 Bad Reuest\r\nDate: {DateTime.UtcNow}\r\nServer: CCM Server\r\nContent-Length: 110\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nThis server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!");
+                byte[] msg = encoding.GetBytes($"HTTP/1.1 400 Bad Request\r\nDate: {DateTime.UtcNow}\r\nServer: CCM Server\r\nContent-Length: 110\r\nConnection: Closed\r\nContent-Type: text/html; charset=iso-8859-1\r\n\r\nThis server uses the CCM (Chat Comunitcation message) protocol to communicate and I need to use this protocol!");
 
                 // Manda a mensagem para o cliente
                 stream.Write(msg, 0, msg.Length);
-
+            }
+            catch (Exception e)
+            {
+                //Exibe a exceção
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
                 // Mostra mensagem avisando que a conexão foi fechada
                 Console.WriteLine($"Close connection to {handler.Client.RemoteEndPoint} with protocol error.");
 

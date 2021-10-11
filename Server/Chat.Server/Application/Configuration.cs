@@ -3,7 +3,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace Chat.Server
+namespace Chat.Server.Application
 {
     public class Configuration
     {
@@ -12,6 +12,9 @@ namespace Chat.Server
         public int MaxConnections { get; set; }
         public int BufferLength { get; set; }
         public string Encoding { get; set; }
+        public string MongoConnectionString { get; set; }
+        public string MongoDBName { get; set; }
+        public string SqlConnectionString { get; set; }
         public Configuration()
         {
 
@@ -38,7 +41,8 @@ namespace Chat.Server
                 $"Buffer Length: {BufferLength}\n" +
                 $"Max Connections: {MaxConnections}\n" +
                 $"Response IP: {ResponseIP}\n" + 
-                $"Port: {Port}";
+                $"Port: {Port}\n" +
+                $"Mongo Connection: {MongoConnectionString} | {MongoDBName}";
         }
     }
 }
