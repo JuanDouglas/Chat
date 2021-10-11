@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Chat.Protocol.Base.Exceptions;
 using Chat.Protocol.Messages;
+using System.IO;
 
 namespace Chat.Server.Application
 {
@@ -56,7 +57,7 @@ namespace Chat.Server.Application
                     //Cria um novo thread para continuar a comunicação 
                     Thread th = new(async () =>
                     {
-                       await ConnectAsync(client);
+                        await ConnectAsync(client);
                     });
 
                     //Inicia o thread criado
@@ -83,7 +84,7 @@ namespace Chat.Server.Application
             {
 
                 //
-                EndPoint remoteEndPoint = handler.Client.RemoteEndPoint; 
+                EndPoint remoteEndPoint = handler.Client.RemoteEndPoint;
 
                 // Loop para ler todo o conteudo da mensagem.
                 while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
@@ -110,8 +111,10 @@ namespace Chat.Server.Application
             }
             catch (SocketException e)
             {
-                Console.WriteLine(e.ToString());
-                handler.Close();
+            }
+            catch (IOException e)
+            {
+
             }
             catch (HttpRequestException e)
             {
@@ -120,7 +123,14 @@ namespace Chat.Server.Application
 
                 // Manda a mensagem para o cliente
                 stream.Write(msg, 0, msg.Length);
-
+            }
+            catch (Exception e)
+            {
+                //Exibe a exceção
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
                 // Mostra mensagem avisando que a conexão foi fechada
                 Console.WriteLine($"Close connection to {handler.Client.RemoteEndPoint} with protocol error.");
 

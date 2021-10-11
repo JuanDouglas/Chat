@@ -27,17 +27,17 @@ namespace Chat.Server.Application
         /// <param name="config">Server configuration</param>
         public ChatServerContext(Configuration config)
         {
-            MongoContext = new(config.MongoConnectionString,config.MongoDBName);
-            LocalContext = new();
+            MongoContext = new(config.MongoConnectionString, config.MongoDBName);
+            LocalContext = new(Encoding.GetEncoding(config.Encoding));
             SqlServerContext = new(config.SqlConnectionString);
         }
 
         public async Task<Message[]> GetMessagesAsync(string username)
         {
-            User user = await SqlServerContext.Users.FirstOrDefaultAsync(fs=>fs.Username == username); ;
+            User user = await SqlServerContext.Users.FirstOrDefaultAsync(fs => fs.Username == username); ;
             var query = SqlServerContext.Messages.Where(fs => fs.TargetUserNavigation.Username == username);
 
-            return await query.ToArrayAsync(); 
+            return await query.ToArrayAsync();
         }
 
         public async Task NotifyUserConnection(string username, string userIP)
@@ -57,8 +57,18 @@ namespace Chat.Server.Application
 
             }
 
+            ConnectedUser cnUser = await LocalContext.ConnectedsUsers.GetOneAsync(fs => fs.Username == username);
 
+            if (cnUser != null)
+            {
+                await LocalContext.ConnectedsUsers.RemoveAsync(cnUser);
+            }
 
+            await LocalContext.ConnectedsUsers.AddAsync(new ConnectedUser()
+            {
+                Username = username,
+                LastUpdateTime = DateTime.UtcNow
+            });
         }
     }
 }

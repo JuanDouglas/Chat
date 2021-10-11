@@ -18,8 +18,5 @@ namespace Chat.Server.Dal.SqlServer.Models
         [Column("Username")]
         [StringLength(50, MinimumLength = 4)]
         public string Username { get; set; }
-
-        [NotMapped]
-        public List<Message> SendMessages { get; set; }
     }
 }

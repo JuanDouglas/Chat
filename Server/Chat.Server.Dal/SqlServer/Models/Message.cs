@@ -16,19 +16,20 @@ namespace Chat.Server.Dal.SqlServer.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
+        [ForeignKey("TargetUserNavigation")]
         public int TargetUser { get; set; }
         [Required]
+        [ForeignKey("SenderUserNavigation")]
         public int SenderUser { get; set; }
+        [ForeignKey("MessageContentNavigation")]
         public int? MessageContent { get; set; }
         [Required]
         [StringLength(6000)]
         public string Text { get; set; }
 
-        [NotMapped]
+
         public User TargetUserNavigation { get; set; }
-        [NotMapped]
         public User SenderUserNavigation { get; set; }
-        [NotMapped]
         public MessageContent? MessageContentNavigation { get; set; }
     }
 }
